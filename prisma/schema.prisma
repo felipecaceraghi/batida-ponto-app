@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  passwordResetTokens PasswordResetToken[]
+  punches   Punch[]
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Punch {
+  id        Int      @id @default(autoincrement())
+  timestamp DateTime @default(now())
+  ip        String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId])
+}
